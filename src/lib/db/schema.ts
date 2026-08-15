@@ -9,7 +9,11 @@ import {
 import { relations } from "drizzle-orm";
 
 /**
-no auth 
+There is no authentication.
+ Users can add plants and share them with others.
+  Whenever a household is created,
+   a unique token is generated that can be shared
+    with other people to give them access to the household.
  */
 export const households = pgTable("households", {
   id: uuid("id").primaryKey().defaultRandom(),
