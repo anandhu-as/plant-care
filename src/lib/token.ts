@@ -6,4 +6,4 @@ const generate = customAlphabet(alphabet, 22);
 export const generateHouseholdToken = (): string => {
     return generate();
 }
-export const HOUSEHOLD_COOKIE = "tend-household-token";
+export const HOUSEHOLD_COOKIE = "blaa-bla-token";
