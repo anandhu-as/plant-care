@@ -1,0 +1,28 @@
+import { eq } from "drizzle-orm";
+import { db } from "../db";
+import { households } from "../db/schema";
+import { generateHouseholdToken } from "../token";
+const houseHoldName: string = "Ente veed";
+//attempt - in each attempt or each itteration a new token is generated
+let attempt = 0;
+//pushing the token and HouseHoldName into db 
+export const createHouseHold = async (name: string = houseHoldName) => {
+    for (attempt; attempt < 5; attempt++) {
+        try {
+            const [household] = await db.insert(households)
+                .values({ token: generateHouseholdToken(), name })
+                .returning();
+            return household
+        } catch (error) {
+            if (attempt === 4) throw (error)
+        }
+    }
+}
+//household by token..
+export const getHouseHoldByToken = async (token: string) => {
+    const [household] = await db.select()
+        .from(households)
+        .where(eq(households.token, token))
+        .limit(1);
+    return household ?? null
+}
