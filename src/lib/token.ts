@@ -7,3 +7,4 @@ export const generateHouseholdToken = (): string => {
     return generate();
 }
 export const HOUSEHOLD_COOKIE = "blaa-bla-token";
+export const HOUSEHOLDS_COOKIE = "heehee-households";

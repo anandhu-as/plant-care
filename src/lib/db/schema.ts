@@ -32,7 +32,6 @@ export const plants = pgTable("plants", {
   name: text("name").notNull(),
   species: text("species"),
   emoji: varchar("emoji", { length: 8 }).notNull().default("🪴"),
-  avatarImageKey: text("avatar_image_key"),
   wateringIntervalDays: integer("watering_interval_days")
     .notNull()
     .default(7),

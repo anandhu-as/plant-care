@@ -1,12 +1,16 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
+import { HOUSEHOLDS_COOKIE } from "@/lib/token";
+import { parseHouseholdList } from "@/lib/household-list";
 import HouseholdHeader from "@/components/household-header";
 import PlantList from "@/components/plant-list";
 import AddPlantForm from "@/components/add-plant-form";
+import RememberHousehold from "@/components/remember-household";
 import { getHouseHoldByToken } from "@/lib/queries/household";
 import { getPlantsForHousehold } from "@/lib/queries/plant";
 
-const HouseholdPage = async ({
+ const Page = async ({
     params,
 }: {
     params: Promise<{ token: string }>;
@@ -14,15 +18,25 @@ const HouseholdPage = async ({
     const { token } = await params;
     const household = await getHouseHoldByToken(token);
     if (!household) notFound();
+
     const plants = await getPlantsForHousehold(household.id);
+    const cookieStore = await cookies();
+    const households = parseHouseholdList(cookieStore.get(HOUSEHOLDS_COOKIE)?.value);
+
     return (
         <main className="min-h-screen bg-gradient-to-b from-stone-50 to-white p-5 sm:p-10">
             <div className="mx-auto max-w-2xl space-y-8">
-                <HouseholdHeader name={household.name} plantCount={plants.length} token={token} />
+                <RememberHousehold token={token} name={household.name} />
+                <HouseholdHeader
+                    name={household.name}
+                    plantCount={plants.length}
+                    token={token}
+                    households={households}
+                />
                 <PlantList token={token} plants={plants} />
-                <AddPlantForm token={token} />
+                <AddPlantForm token={token} plantIdEnabled={!!process.env.PLANTNET_API_KEY} />
             </div>
         </main>
     );
 }
-export default HouseholdPage
+export default Page
