@@ -3,6 +3,8 @@ import { statusStyles, statusLabels } from "@/lib/watering-status-styles";
 import type { Plant } from "@/lib/db/schema";
 import { getWateringStatus } from "@/lib/freshness";
 import { markWateredAction, removePlantAction } from "@/app/actions/plant";
+import { SubmitButton } from "./submit-button";
+
 type PlantWithLastWatered = Plant & { lastWateredAt: Date | null };
 
 const PlantCard = ({ token, plant }: { token: string; plant: PlantWithLastWatered }) => {
@@ -45,22 +47,21 @@ const PlantCard = ({ token, plant }: { token: string; plant: PlantWithLastWatere
 
                 <div className="flex items-center">
                     <form action={markWateredAction.bind(null, token, plant.id)}>
-                        <button
-                            type="submit"
+                        <SubmitButton
+                            pendingText="Watering..."
                             className="whitespace-nowrap rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-sky-600 hover:shadow-md active:scale-95 flex items-center gap-1.5"
                         >
                             <span className="text-lg">💧</span> Water
-                        </button>
+                        </SubmitButton>
                     </form>
 
                     <form action={removePlantAction.bind(null, token, plant.id)}>
-                        <button
-                            type="submit"
+                        <SubmitButton
                             className="p-2 rounded-full text-stone-400 hover:bg-red-50 transition hover:text-red-600 ml-1 cursor-pointer"
                             aria-label={`Remove ${plant.name}`}
                         >
                             ✕
-                        </button>
+                        </SubmitButton>
                     </form>
                 </div>
             </div>

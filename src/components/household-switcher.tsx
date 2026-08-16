@@ -23,7 +23,7 @@ const HouseholdSwitcher = ({
 
       {open && (
         <>
-           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border border-stone-200 bg-white p-2 shadow-lg">
             {others.length > 0 ? (
               <ul className="mb-1 space-y-1">
