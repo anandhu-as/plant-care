@@ -17,7 +17,8 @@ export const addPlantAction = async (token: string, formData: FormData) => {
     const emoji = (formData.get("emoji") as string)?.trim() || undefined;
     const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
     const intervalRaw = formData.get("wateringIntervalDays") as string;
-    const wateringIntervalDays = intervalRaw ? parseInt(intervalRaw, 10) : undefined;
+    const parsedInterval = intervalRaw ? parseInt(intervalRaw, 10) : undefined;
+    const wateringIntervalDays = parsedInterval && !isNaN(parsedInterval) ? parsedInterval : undefined;
     await addPlant(household.id, { name, species, emoji, imageUrl, wateringIntervalDays, });
     revalidatePath(`/h/${token}`)
 }

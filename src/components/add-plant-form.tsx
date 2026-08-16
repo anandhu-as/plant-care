@@ -3,6 +3,7 @@ import { useState } from "react";
 import { addPlantAction } from "@/app/actions/plant";
 import PlantPhotoIdentify from "@/components/plant-photo-identify";
 import { PlantIdentification } from "@/app/actions/identify-plant";
+import { toast } from "sonner";
 
 const inputClass =
   "rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-700/40";
@@ -32,9 +33,14 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
 
   const submitAction = async (formData: FormData) => {
     startTransition(true);
-    await addPlantAction(token, formData);
-    setIsSuccess(true);
-    startTransition(false);
+    try {
+      await addPlantAction(token, formData);
+      setIsSuccess(true);
+    } catch (e: any) {
+      toast.error("Failed to add plant", { description: e.message || "An error occurred." });
+    } finally {
+      startTransition(false);
+    }
   };
 
   const handleAddAnother = () => {
