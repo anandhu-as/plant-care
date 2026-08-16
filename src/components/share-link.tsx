@@ -52,10 +52,10 @@ const ShareLink = ({ token, origin }: { token: string; origin: string }) => {
             </button>
 
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs transition-opacity duration-300">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-fade-in">
                     <div className="absolute inset-0" onClick={() => setIsOpen(false)} />
                     
-                    <div className="relative w-full max-w-md rounded-3xl bg-[#f5f1ea] p-6 shadow-xl transition-all duration-300 animate-in zoom-in-95">
+                    <div className="relative w-full max-w-md rounded-3xl bg-[#f5f1ea] p-6 shadow-2xl animate-pop-in">
                         <button
                             onClick={() => setIsOpen(false)}
                             className="absolute top-5 right-5 rounded-full p-1 text-stone-400 hover:bg-stone-200/50 hover:text-stone-600 transition cursor-pointer"

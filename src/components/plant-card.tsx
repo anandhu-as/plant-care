@@ -12,13 +12,13 @@ const PlantCard = ({ token, plant }: { token: string; plant: PlantWithLastWatere
 
     return (
         <li
-            className={`rounded-2xl border-2 border-emerald-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col`}
+            className={`rounded-2xl border-2 border-emerald-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 ease-out relative overflow-hidden flex flex-col group`}
         >
-            <div className={`absolute left-0 top-0 bottom-0 w-2 ${style.card} opacity-80`}></div>
+            <div className={`absolute left-0 top-0 bottom-0 w-2 ${style.card} opacity-80 group-hover:w-3 transition-all duration-300`}></div>
             
             {/* Top row: Avatar, Info, Actions */}
             <div className="flex items-center gap-4 px-5 pt-4 pb-2">
-                <div className="shrink-0 h-16 w-16 flex items-center justify-center rounded-xl bg-emerald-50/50 overflow-hidden shadow-inner">
+                <div className="shrink-0 h-16 w-16 flex items-center justify-center rounded-xl bg-emerald-50/50 overflow-hidden shadow-inner group-hover:shadow-md transition-shadow duration-300">
                     {plant.imageUrl ? (
                         <img src={plant.imageUrl} alt={plant.name} className="h-full w-full object-cover" />
                     ) : (
@@ -47,7 +47,7 @@ const PlantCard = ({ token, plant }: { token: string; plant: PlantWithLastWatere
                     <form action={markWateredAction.bind(null, token, plant.id)}>
                         <button
                             type="submit"
-                            className="whitespace-nowrap rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-sky-600 flex items-center gap-1.5"
+                            className="whitespace-nowrap rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-sky-600 hover:shadow-md active:scale-95 flex items-center gap-1.5"
                         >
                             <span className="text-lg">💧</span> Water
                         </button>
