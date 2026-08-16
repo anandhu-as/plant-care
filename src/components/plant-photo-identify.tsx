@@ -57,36 +57,43 @@ const PlantPhotoIdentify = ({
         // Compress to JPEG with 0.8 quality
         const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
         onImageChange?.(dataUrl);
+
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            setError("Failed to compress image.");
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("image", blob, "image.jpg");
+
+          startTransition(async () => {
+            const result = await identifyPlantAction(formData);
+            if (!result.success) {
+              const errMsg = result.error ?? "Something went wrong.";
+              setError(errMsg);
+              toast.error("Species not found", { description: errMsg });
+              return;
+            }
+            if (result.matches.length === 0) {
+              const errMsg = "No matches found — try a clearer photo of a leaf.";
+              setError(errMsg);
+              toast.error("Species not found", { description: errMsg });
+              return;
+            }
+            setMatches(result.matches);
+            const top = result.matches[0];
+            setSelected(top.scientificName);
+            onIdentified(top);
+            toast.success("Plant identified!", { 
+              description: `Looks like a ${top.commonName ?? top.scientificName}.` 
+            });
+          });
+        }, "image/jpeg", 0.8);
       };
       img.src = event.target?.result as string;
     };
     reader.readAsDataURL(file);
-
-    const formData = new FormData();
-    formData.append("image", file);
-
-    startTransition(async () => {
-      const result = await identifyPlantAction(formData);
-      if (!result.success) {
-        const errMsg = result.error ?? "Something went wrong.";
-        setError(errMsg);
-        toast.error("Species not found", { description: errMsg });
-        return;
-      }
-      if (result.matches.length === 0) {
-        const errMsg = "No matches found — try a clearer photo of a leaf.";
-        setError(errMsg);
-        toast.error("Species not found", { description: errMsg });
-        return;
-      }
-      setMatches(result.matches);
-      const top = result.matches[0];
-      setSelected(top.scientificName);
-      onIdentified(top);
-      toast.success("Plant identified!", { 
-        description: `Looks like a ${top.commonName ?? top.scientificName}.` 
-      });
-    });
   };
 
   const pickMatch = (m: PlantIdentification) => {
