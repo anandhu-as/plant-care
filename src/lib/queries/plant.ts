@@ -6,6 +6,7 @@ type AddPlantInput = {
     name: string;
     species?: string;
     emoji?: string;
+    imageUrl?: string;
     wateringIntervalDays?: number;
 }
 //creating plant in household
@@ -15,6 +16,7 @@ export const addPlant = async (householdId: string, input: AddPlantInput) => {
         name: input.name,
         species: input.species || null,
         emoji: input.emoji || "🪴",
+        imageUrl: input.imageUrl || null,
         wateringIntervalDays: input.wateringIntervalDays ?? 7,
     }).returning();
     return plant;

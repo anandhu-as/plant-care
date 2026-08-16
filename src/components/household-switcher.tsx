@@ -16,7 +16,7 @@ const HouseholdSwitcher = ({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 rounded-full border border-stone-300 px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-stone-600 transition hover:border-orange-800 hover:text-orange-800"
+        className="flex items-center gap-1 rounded-full border border-stone-300 px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-stone-600 transition hover:border-emerald-800 hover:text-emerald-800 cursor-pointer"
       >
         Switch ▾
       </button>
@@ -44,7 +44,7 @@ const HouseholdSwitcher = ({
             )}
             <Link
               href="/?new=1"
-              className="block rounded-lg border-t border-stone-100 px-3 py-2 pt-3 text-sm font-medium text-orange-800 hover:bg-orange-50"
+              className="block rounded-lg border-t border-stone-100 px-3 py-2 pt-3 text-sm font-medium text-emerald-800 hover:bg-emerald-50"
               onClick={() => setOpen(false)}
             >
               + Create another

@@ -12,20 +12,30 @@ const PlantCard = ({ token, plant }: { token: string; plant: PlantWithLastWatere
 
     return (
         <li
-            className={`flex items-center gap-4 rounded-xl border border-stone-200 border-l-4 bg-white px-4 py-4 shadow-sm ${style.card}`}
+            className={`flex items-center gap-4 rounded-2xl border-2 border-emerald-100 bg-white/80 backdrop-blur-sm px-5 py-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden`}
         >
-            <div className="shrink-0 text-3xl">{plant.emoji}</div>
+            <div className={`absolute left-0 top-0 bottom-0 w-2 ${style.card} opacity-80`}></div>
+            <div className="shrink-0 h-16 w-16 flex items-center justify-center rounded-xl bg-emerald-50/50 overflow-hidden shadow-inner">
+                {plant.imageUrl ? (
+                    <img src={plant.imageUrl} alt={plant.name} className="h-full w-full object-cover" />
+                ) : (
+                    <span className="text-4xl">{plant.emoji}</span>
+                )}
+            </div>
 
             <div className="min-w-0 flex-1">
-                <div className="truncate font-medium text-stone-900">{plant.name}</div>
-                <div className="mt-1 flex items-center gap-2">
+                <div className="truncate font-semibold text-emerald-950 text-lg">{plant.name}</div>
+                {plant.species && (
+                    <div className="truncate text-sm text-emerald-800/80 italic">{plant.species}</div>
+                )}
+                <div className="mt-1.5 flex items-center gap-2">
                     <span
-                        className={`inline-block rounded-full border px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide ${style.chip}`}
+                        className={`inline-block rounded-full border px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide ${style.chip}`}
                     >
                         {statusLabels[info.status]}
                     </span>
                     {info.daysSinceWatered !== null && (
-                        <span className="text-xs text-stone-500">{info.daysSinceWatered}d ago</span>
+                        <span className="text-xs font-medium text-stone-500">{info.daysSinceWatered}d ago</span>
                     )}
                 </div>
             </div>
@@ -33,16 +43,16 @@ const PlantCard = ({ token, plant }: { token: string; plant: PlantWithLastWatere
             <form action={markWateredAction.bind(null, token, plant.id)}>
                 <button
                     type="submit"
-                    className="whitespace-nowrap rounded-lg bg-orange-800 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-orange-900"
+                    className="whitespace-nowrap rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-sky-600 flex items-center gap-1.5"
                 >
-                    💧 Water
+                    <span className="text-lg">💧</span> Water
                 </button>
             </form>
 
             <form action={removePlantAction.bind(null, token, plant.id)}>
                 <button
                     type="submit"
-                    className="px-1 text-sm text-stone-400 transition hover:text-red-600"
+                    className="p-2 rounded-full text-stone-400 hover:bg-red-50 transition hover:text-red-600 ml-1 cursor-pointer"
                     aria-label={`Remove ${plant.name}`}
                 >
                     ✕

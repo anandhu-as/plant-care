@@ -2,12 +2,15 @@
 
 import { identifyPlantAction, PlantIdentification } from "@/app/actions/identify-plant";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 
 const PlantPhotoIdentify = ({
   onIdentified,
+  onImageChange,
 }: {
   onIdentified: (match: PlantIdentification) => void;
+  onImageChange?: (base64: string) => void;
 }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [matches, setMatches] = useState<PlantIdentification[]>([]);
@@ -15,7 +18,7 @@ const PlantPhotoIdentify = ({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -24,35 +27,52 @@ const PlantPhotoIdentify = ({
     setSelected(null);
     setPreview(URL.createObjectURL(file)); 
 
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      if (base64) onImageChange?.(base64);
+    };
+    reader.readAsDataURL(file);
+
     const formData = new FormData();
     formData.append("image", file);
 
     startTransition(async () => {
       const result = await identifyPlantAction(formData);
       if (!result.success) {
-        setError(result.error ?? "Something went wrong.");
+        const errMsg = result.error ?? "Something went wrong.";
+        setError(errMsg);
+        toast.error("Species not found", { description: errMsg });
         return;
       }
       if (result.matches.length === 0) {
-        setError("No matches found — try a clearer photo of a leaf.");
+        const errMsg = "No matches found — try a clearer photo of a leaf.";
+        setError(errMsg);
+        toast.error("Species not found", { description: errMsg });
         return;
       }
       setMatches(result.matches);
       const top = result.matches[0];
       setSelected(top.scientificName);
       onIdentified(top);
+      toast.success("Plant identified!", { 
+        description: `Looks like a ${top.commonName ?? top.scientificName}.` 
+      });
     });
-  }
+  };
 
-  function pickMatch(m: PlantIdentification) {
+  const pickMatch = (m: PlantIdentification) => {
     setSelected(m.scientificName);
     onIdentified(m);
-  }
+    toast.success("Match updated", { 
+      description: `Selected ${m.commonName ?? m.scientificName}.` 
+    });
+  };
 
   return (
     <div className="col-span-2 space-y-3">
-      <label className="block text-sm font-medium text-stone-700">
-        Identify by photo
+      <label className="block text-sm font-semibold text-emerald-800">
+        Identify by photo 📸
       </label>
 
       <div className="flex items-start gap-3">
@@ -61,7 +81,7 @@ const PlantPhotoIdentify = ({
           <img
             src={preview}
             alt="Uploaded plant"
-            className="h-16 w-16 shrink-0 rounded-lg border border-stone-200 object-cover"
+            className="h-16 w-16 shrink-0 rounded-xl border border-emerald-200 object-cover shadow-sm"
           />
         )}
         <input
@@ -69,17 +89,17 @@ const PlantPhotoIdentify = ({
           accept="image/*"
           onChange={handleFileChange}
           disabled={isPending}
-          className="block flex-1 text-sm text-stone-600 file:mr-3 file:rounded-lg file:border-0 file:bg-stone-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-orange-900"
+          className="block flex-1 text-sm text-emerald-600 file:mr-3 file:rounded-xl file:border-0 file:bg-emerald-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-emerald-600 transition cursor-pointer"
         />
       </div>
 
-      {isPending && <p className="text-sm text-stone-500">Identifying…</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {isPending && <p className="text-sm font-medium text-emerald-400">Identifying... 🌿</p>}
+      {error && <p className="text-sm font-medium text-red-500">{error}</p>}
 
       {matches.length > 0 && (
-        <div>
-          <p className="mb-1.5 text-xs text-stone-500">
-            Top match applied — tap another if it's wrong:
+        <div className="bg-emerald-50/30 p-3 rounded-xl border border-emerald-100">
+          <p className="mb-2 text-xs font-medium text-emerald-700">
+            Top match applied — tap another if it&apos;s wrong:
           </p>
           <ul className="flex flex-wrap gap-2">
             {matches.map((m) => (
@@ -87,10 +107,10 @@ const PlantPhotoIdentify = ({
                 <button
                   type="button"
                   onClick={() => pickMatch(m)}
-                  className={`flex items-center gap-2 rounded-full border px-2 py-1 pr-3 text-sm transition ${
+                  className={`flex items-center gap-2 rounded-full border px-2 py-1 pr-3 text-sm transition shadow-sm cursor-pointer ${
                     selected === m.scientificName
-                      ? "border-orange-700 bg-orange-50 text-orange-800"
-                      : "border-stone-300 bg-white text-stone-700 hover:border-orange-700"
+                      ? "border-emerald-400 bg-emerald-100 text-emerald-800 font-medium ring-2 ring-emerald-200"
+                      : "border-emerald-200 bg-white text-stone-600 hover:border-emerald-300 hover:bg-emerald-50"
                   }`}
                 >
                   {m.imageUrl ? (
@@ -98,13 +118,13 @@ const PlantPhotoIdentify = ({
                     <img
                       src={m.imageUrl}
                       alt=""
-                      className="h-6 w-6 rounded-full object-cover"
+                      className="h-6 w-6 rounded-full object-cover shadow-sm"
                     />
                   ) : (
                     <span className="text-base">🌿</span>
                   )}
                   {m.commonName ?? m.scientificName}{" "}
-                  <span className="text-stone-400">
+                  <span className="text-stone-400 font-normal">
                     ({Math.round(m.confidence * 100)}%)
                   </span>
                 </button>

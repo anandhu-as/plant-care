@@ -34,7 +34,30 @@ export async function identifyPlantAction(formData: FormData): Promise<IdentifyR
         if (!res.ok) {
             const bodyText = await res.text();
             console.error("Pl@ntNet error", res.status, bodyText);
-            return { success: false, matches: [], error: `Pl@ntNet error ${res.status}: ${bodyText.slice(0, 200)}` };
+            
+            if (res.status === 404) {
+                return {
+                    success: false,
+                    matches: [],
+                    error: "We couldn't find any matching plant. Make sure the photo is a clear, well-lit shot of a leaf, flower, or fruit!"
+                };
+            }
+            if (res.status === 400) {
+                return {
+                    success: false,
+                    matches: [],
+                    error: "The uploaded image appears to be invalid or corrupted. Please upload a clear photo of a plant."
+                };
+            }
+            if (res.status === 401 || res.status === 403) {
+                return {
+                    success: false,
+                    matches: [],
+                    error: "Plant identification API key is invalid or expired. Please check your configuration."
+                };
+            }
+
+            return { success: false, matches: [], error: "Unable to identify this image. Please try again with a clearer photo of a leaf or flower." };
         }
 
         const data = await res.json();

@@ -15,9 +15,10 @@ export const addPlantAction = async (token: string, formData: FormData) => {
     if (!name) throw new Error("Plant name is required");
     const species = (formData.get("species") as string)?.trim() || undefined;
     const emoji = (formData.get("emoji") as string)?.trim() || undefined;
+    const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
     const intervalRaw = formData.get("wateringIntervalDays") as string;
     const wateringIntervalDays = intervalRaw ? parseInt(intervalRaw, 10) : undefined;
-    await addPlant(household.id, { name, species, emoji, wateringIntervalDays, });
+    await addPlant(household.id, { name, species, emoji, imageUrl, wateringIntervalDays, });
     revalidatePath(`/h/${token}`)
 }
 
