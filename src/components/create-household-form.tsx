@@ -8,7 +8,7 @@ const CreateHouseholdForm = () => {
       <input
         name="name"
         placeholder="e.g. Apartment 4B"
-        className="rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-900 placeholder:text-stone-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-700/40 focus:border-orange-700/50"
+        className="rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-900 placeholder:text-stone-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-700/40 focus:border-green-700/50"
       />
       <button
         type="submit"

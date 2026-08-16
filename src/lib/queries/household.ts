@@ -12,11 +12,15 @@ export const createHouseHold = async (name: string = houseHoldName) => {
             const [household] = await db.insert(households)
                 .values({ token: generateHouseholdToken(), name })
                 .returning();
+            if (!household) {
+                throw new Error("Failed to create household");
+            }
             return household
         } catch (error) {
             if (attempt === 4) throw (error)
         }
     }
+    throw new Error("Failed to create household after 5 attempts");
 }
 //household by token..
 export const getHouseHoldByToken = async (token: string) => {
