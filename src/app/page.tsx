@@ -2,9 +2,7 @@ import { APP_DESC, APP_NAME } from "@/constants";
 import { HOUSEHOLD_COOKIE } from "@/lib/token";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import CreateHouseholdForm from "./components/create-household-form";
-
-
+import CreateHouseholdForm from "../components/create-household-form";
 const Home = async () => {
   const cookieStore = await cookies();
   const rememberedToken = cookieStore.get(HOUSEHOLD_COOKIE)?.value;
