@@ -1,4 +1,4 @@
-
+/* eslint-disable @next/next/no-img-element */
 import { statusStyles, statusLabels } from "@/lib/watering-status-styles";
 import type { Plant } from "@/lib/db/schema";
 import { getWateringStatus } from "@/lib/freshness";

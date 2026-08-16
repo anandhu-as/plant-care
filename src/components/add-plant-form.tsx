@@ -36,8 +36,9 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
     try {
       await addPlantAction(token, formData);
       setIsSuccess(true);
-    } catch (e: any) {
-      toast.error("Failed to add plant", { description: e.message || "An error occurred." });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "An error occurred.";
+      toast.error("Failed to add plant", { description: msg });
     } finally {
       startTransition(false);
     }

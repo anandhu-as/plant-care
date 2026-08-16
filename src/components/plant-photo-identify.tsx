@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { identifyPlantAction, PlantIdentification } from "@/app/actions/identify-plant";
