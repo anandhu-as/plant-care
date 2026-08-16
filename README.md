@@ -95,5 +95,3 @@ Open [http://localhost:3000](http://localhost:3000). Create a household, and you
 | `pnpm db:generate`   | Generate a new migration from schema changes   |
 | `pnpm db:migrate`    | Apply pending migrations to the database       |
 | `pnpm db:studio`     | Open Drizzle Studio (visual DB browser)        |
-
-## Project structure
