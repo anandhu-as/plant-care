@@ -45,6 +45,6 @@ export const getPlantsForHousehold = async (householdId: string) => {
     //all plants with updated info 
     return results.map(row => ({
         ...row.plant,
-        lastWateredAt: row.lastWateredAt,
+        lastWateredAt: row.lastWateredAt ? new Date(row.lastWateredAt) : null,
     }));
 }
