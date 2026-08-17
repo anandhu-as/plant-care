@@ -8,76 +8,68 @@ import { SubmitButton } from "./submit-button";
 type PlantWithLastWatered = Plant & { lastWateredAt: Date | null };
 
 const PlantCard = ({ token, plant }: { token: string; plant: PlantWithLastWatered }) => {
-    //water status
+    ////water status
     const info = getWateringStatus(plant.lastWateredAt, plant.wateringIntervalDays);
     const style = statusStyles[info.status];
 
     return (
-        <li
-            className={`rounded-2xl border-2 border-emerald-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 ease-out relative overflow-hidden flex flex-col group`}
-        >
-            <div className={`absolute left-0 top-0 bottom-0 w-2 ${style.card} opacity-80 group-hover:w-3 transition-all duration-300`}></div>
-            
-            {/* Top row: Avatar, Info, Actions */}
-            <div className="flex items-center gap-4 px-5 pt-4 pb-2">
-                <div className="shrink-0 h-16 w-16 flex items-center justify-center rounded-xl bg-emerald-50/50 overflow-hidden shadow-inner group-hover:shadow-md transition-shadow duration-300">
+        <li className="relative py-6 group border-b border-stone-200 last:border-0">
+
+            <div className="flex items-center gap-4 mb-4">
+                <div className="shrink-0 h-16 w-16 md:h-20 md:w-20 rounded-full overflow-hidden shadow-inner bg-stone-100 flex items-center justify-center">
                     {plant.imageUrl ? (
                         <img src={plant.imageUrl} alt={plant.name} className="h-full w-full object-cover" />
                     ) : (
                         <span className="text-4xl">{plant.emoji}</span>
                     )}
                 </div>
-
                 <div className="min-w-0 flex-1">
-                    <div className="truncate font-semibold text-emerald-950 text-lg">{plant.name}</div>
+                    <div className="truncate font-bold text-stone-900 text-xl md:text-2xl tracking-tight">{plant.name}</div>
                     {plant.species && (
-                        <div className="truncate text-sm text-emerald-800/80 italic">{plant.species}</div>
+                        <div className="truncate text-stone-500 text-sm md:text-base mt-0.5">{plant.species}</div>
                     )}
-                    <div className="mt-1.5 flex items-center gap-2">
-                        <span
-                            className={`inline-block rounded-full border px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide ${style.chip}`}
-                        >
-                            {statusLabels[info.status]}
-                        </span>
-                        {info.daysSinceWatered !== null && (
-                            <span className="text-xs font-medium text-stone-500">{info.daysSinceWatered}d ago</span>
-                        )}
-                    </div>
-                </div>
-
-                <div className="flex items-center">
-                    <form action={markWateredAction.bind(null, token, plant.id)}>
-                        <SubmitButton
-                            pendingText="Watering..."
-                            className="whitespace-nowrap rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-sky-600 hover:shadow-md active:scale-95 flex items-center gap-1.5"
-                        >
-                            <span className="text-lg">💧</span> Water
-                        </SubmitButton>
-                    </form>
-
-                    <form action={removePlantAction.bind(null, token, plant.id)}>
-                        <SubmitButton
-                            className="p-2 rounded-full text-stone-400 hover:bg-red-50 transition hover:text-red-600 ml-1 cursor-pointer"
-                            aria-label={`Remove ${plant.name}`}
-                        >
-                            ✕
-                        </SubmitButton>
-                    </form>
                 </div>
             </div>
 
-            {/* Bottom row: Care Guide */}
-            <div className="px-5 pb-4 mt-2 pl-[5.5rem]">
-                <h4 className="text-[11px] font-bold tracking-widest text-emerald-800/50 mb-2.5 uppercase">Care Guide</h4>
-                <div className="space-y-2.5 text-[13px] leading-relaxed text-emerald-900/80">
-                    <div className="flex gap-2.5 items-start">
-                        <span className="text-sky-500 text-base leading-none mt-0.5">💧</span>
-                        <span>Water every ~{plant.wateringIntervalDays} days when the top of the soil feels dry. Very forgiving.</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+                <div>
+                    <div className="font-semibold text-stone-800 text-lg">
+                        {info.daysUntilDue === null
+                            ? "Not watered yet"
+                            : info.daysUntilDue < 0
+                                ? `Overdue by ${Math.abs(info.daysUntilDue)} days`
+                                : info.daysUntilDue === 0
+                                    ? "Water today"
+                                    : `Water in ${info.daysUntilDue} days`}
                     </div>
-                    <div className="flex gap-2.5 items-start">
-                        <span className="text-amber-500 text-base leading-none mt-0.5">☀️</span>
-                        <span>Tolerates low to bright indirect light. Ensure good drainage.</span>
+                    <div className="text-sm text-stone-500 mt-0.5">
+                        {info.daysSinceWatered === null
+                            ? "Never watered"
+                            : info.daysSinceWatered === 0
+                                ? "Watered today"
+                                : `Watered ${info.daysSinceWatered} days ago`}
+                        {" "}• every ~{plant.wateringIntervalDays} days
                     </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                    <form action={markWateredAction.bind(null, token, plant.id)} className="flex-1 sm:flex-none">
+                        <SubmitButton
+                            pendingText="..."
+                            className="w-full justify-center rounded-full bg-[#1da1f2] hover:bg-[#1a91da] text-white px-5 py-2.5 font-semibold text-sm transition-colors shadow-sm flex items-center gap-2 cursor-pointer"
+                        >
+
+                            Mark watered 💧
+                        </SubmitButton>
+                    </form>
+                    <form action={removePlantAction.bind(null, token, plant.id)}>
+                        <SubmitButton
+                            className="p-2 rounded-full text-stone-300 hover:bg-stone-100 transition hover:text-stone-500 cursor-pointer opacity-0 group-hover:opacity-100"
+                            aria-label={`Remove ${plant.name}`}
+                        >
+                            ❌
+                        </SubmitButton>
+                    </form>
                 </div>
             </div>
         </li>
