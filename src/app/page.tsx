@@ -2,9 +2,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { HOUSEHOLDS_COOKIE } from "@/lib/token";
 import { parseHouseholdList } from "@/lib/household-list";
-import CreateHouseholdForm from "@/components/create-household-form";
+import CreateHouseholdForm from "@/components/household/create-household-form";
 import { APP_NAME, APP_DESC } from "@/constants";
-import WelcomeToast from "@/components/welcome-toast";
+import WelcomeToast from "@/components/ui/welcome-toast";
 
 const Home = async ({
   searchParams,
@@ -20,7 +20,7 @@ const Home = async ({
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+    <main className="min-h-screen bg-[#f5f1ea]">
       <WelcomeToast />
       <section className="flex min-h-screen items-center justify-center px-6">
         <div className="w-full max-w-xl text-center">

@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 
 import { HOUSEHOLDS_COOKIE } from "@/lib/token";
 import { parseHouseholdList } from "@/lib/household-list";
-import HouseholdHeader from "@/components/household-header";
+import HouseholdHeader from "@/components/household/household-header";
 
-import PlantList from "@/components/plant-list";
-import AddPlantForm from "@/components/add-plant-form";
-import RememberHousehold from "@/components/remember-household";
+import PlantList from "@/components/plants/plant-list";
+import AddPlantForm from "@/components/plants/add-plant-form";
+import RememberHousehold from "@/components/household/remember-household";
 import { getHouseHoldByToken } from "@/lib/queries/household";
 import { getPlantsForHousehold } from "@/lib/queries/plant";
 
@@ -28,7 +28,7 @@ import { getPlantsForHousehold } from "@/lib/queries/plant";
     const origin = `${protocol}://${host}`;
 
     return (
-        <main className="min-h-screen bg-gradient-to-b from-stone-50 to-white p-5 sm:p-10">
+        <main className="min-h-screen bg-[#f5f1ea] p-5 sm:p-10">
             <div className="mx-auto max-w-2xl space-y-8">
                 <RememberHousehold token={token} name={household.name} />
                 <HouseholdHeader
@@ -37,10 +37,10 @@ import { getPlantsForHousehold } from "@/lib/queries/plant";
                     token={token}
                     households={households}
                     origin={origin}
+                    plantIdEnabled={!!process.env.PLANTNET_API_KEY}
                 />
 
                 <PlantList token={token} plants={plants} />
-                <AddPlantForm token={token} plantIdEnabled={!!process.env.PLANTNET_API_KEY} />
             </div>
         </main>
     );

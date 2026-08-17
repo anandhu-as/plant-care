@@ -1,4 +1,4 @@
-import PlantCard from "@/components/plant-card";
+import PlantCard from "@/components/plants/plant-card";
 import type { Plant } from "@/lib/db/schema";
 
 type PlantWithLastWatered = Plant & { lastWateredAt: Date | null };
