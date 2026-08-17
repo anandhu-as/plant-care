@@ -21,7 +21,7 @@ async function rememberHousehold(token: string, name: string) {
   });
 }
 //creates a new household in  db and saves token in cookie,
-export const createHouseHoldAction=async(formData: FormData)=> {
+export const createHouseHoldAction = async (formData: FormData) => {
   const name = (formData.get("name") as string)?.trim() || "My Plants";
   const household = await createHouseHold(name);
   await rememberHousehold(household.token, household.name);
@@ -29,6 +29,6 @@ export const createHouseHoldAction=async(formData: FormData)=> {
 }
 
 
-export async function rememberHouseholdAction(token: string, name: string) {
+export const rememberHouseholdAction = async (token: string, name: string) => {
   await rememberHousehold(token, name);
 }
