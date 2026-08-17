@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { addPlantAction } from "@/app/actions/plant";
 import PlantPhotoIdentify from "@/components/plant-photo-identify";
 import { PlantIdentification } from "@/app/actions/identify-plant";
@@ -14,7 +14,7 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
   const [imageUrl, setImageUrl] = useState("");
 
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isPending, startTransition] = useState(false); // We can just use a simple loading state or action
+  const [isPending, startTransition] = useTransition();
 
   const handleIdentified = (match: PlantIdentification) => {
     setSpecies(match.scientificName);
@@ -32,16 +32,15 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
   };
 
   const submitAction = async (formData: FormData) => {
-    startTransition(true);
-    try {
-      await addPlantAction(token, formData);
-      setIsSuccess(true);
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "An error occurred.";
-      toast.error("Failed to add plant", { description: msg });
-    } finally {
-      startTransition(false);
-    }
+    startTransition(async () => {
+      try {
+        await addPlantAction(token, formData);
+        setIsSuccess(true);
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : "An error occurred.";
+        toast.error("Failed to add plant", { description: msg });
+      }
+    });
   };
 
   const handleAddAnother = () => {

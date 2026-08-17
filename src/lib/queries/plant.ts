@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "../db";
 import { plants, wateringLogs } from "../db/schema";
 
@@ -30,23 +30,21 @@ export const removePlant = async (plantId: string) => {
 
 //select/retrieving  plants belonging to household  
 export const getPlantsForHousehold = async (householdId: string) => {
-    //getting all plants belonging to household
-    const plantRow = await db
-        .select()
+    //getting all plants belonging to household and their last watered date
+    const results = await db
+        .select({
+            plant: plants,
+            lastWateredAt: sql<Date | null>`max(${wateringLogs.wateredAt})`,
+        })
         .from(plants)
+        .leftJoin(wateringLogs, eq(plants.id, wateringLogs.plantId))
         .where(eq(plants.householdId, householdId))
+        .groupBy(plants.id)
         .orderBy(plants.name);
 
-    //recent watering of each plant
-    const results = await Promise.all(plantRow.map(async (plant) => {
-        const [lastwatering] = await db
-            .select()
-            .from(wateringLogs)
-            .where(eq(wateringLogs.plantId, plant.id))
-            .orderBy(desc(wateringLogs.wateredAt))
-            .limit(1);
-        return { ...plant, lastWateredAt: lastwatering?.wateredAt ?? null }
-    }))
-    //all plants with upadted info 
-    return results
+    //all plants with updated info 
+    return results.map(row => ({
+        ...row.plant,
+        lastWateredAt: row.lastWateredAt,
+    }));
 }
