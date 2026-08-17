@@ -45,10 +45,10 @@ const ShareLink = ({ token, origin }: { token: string; origin: string }) => {
             <button
                 type="button"
                 onClick={() => setIsOpen(true)}
-                className="flex items-center gap-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-stone-600 transition hover:border-green-800 hover:text-green-800 cursor-pointer"
+                className="flex items-center justify-center h-10 w-10 rounded-full bg-emerald-100/80 text-emerald-700 transition hover:bg-emerald-200 hover:text-emerald-800 cursor-pointer shadow-sm hover:shadow"
+                aria-label="Share"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
-                Share
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
             </button>
 
             {isOpen && (

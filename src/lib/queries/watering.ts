@@ -5,7 +5,6 @@ export const logWatering = async (plantId: string, note?: string) => {
     const [log] = await db
         .insert(wateringLogs)
         .values({ 
-            id: crypto.randomUUID(), 
             plantId, 
             note: note || null 
         })
