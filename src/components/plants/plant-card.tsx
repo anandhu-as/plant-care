@@ -1,9 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
-import { statusStyles, statusLabels } from "@/lib/watering-status-styles";
+
+import { statusStyles } from "@/lib/watering-status-styles";
 import type { Plant } from "@/lib/db/schema";
 import { getWateringStatus } from "@/lib/freshness";
 import { markWateredAction, removePlantAction } from "@/app/actions/plant";
-import { SubmitButton } from "./submit-button";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 type PlantWithLastWatered = Plant & { lastWateredAt: Date | null };
 

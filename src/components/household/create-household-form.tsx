@@ -1,7 +1,7 @@
 "use client";
 
-import { createHouseHoldAction } from "../app/actions/household";
-import { SubmitButton } from "./submit-button";
+import { createHouseHoldAction } from "@/app/actions/household";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 const CreateHouseholdForm = () => {
   return (
