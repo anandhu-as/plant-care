@@ -118,11 +118,13 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
               </div>
             ) : (
               <form action={submitAction} className="grid grid-cols-2 gap-4 bg-white/60 p-6 rounded-2xl shadow-sm">
-                {plantIdEnabled && (
-                  <div className="col-span-2 mb-2 p-4 bg-white rounded-xl border border-emerald-100 shadow-sm">
-                    <PlantPhotoIdentify onIdentified={handleIdentified} onImageChange={handleImageChange} />
-                  </div>
-                )}
+                <div className="col-span-2 mb-2 p-4 bg-white rounded-xl border border-emerald-100 shadow-sm">
+                  <PlantPhotoIdentify
+                    onIdentified={handleIdentified}
+                    onImageChange={handleImageChange}
+                    identifyEnabled={plantIdEnabled}
+                  />
+                </div>
 
                 <input type="hidden" name="imageUrl" value={imageUrl} />
 

@@ -9,9 +9,11 @@ import { toast } from "sonner";
 const PlantPhotoIdentify = ({
   onIdentified,
   onImageChange,
+  identifyEnabled = true,
 }: {
   onIdentified: (match: PlantIdentification) => void;
   onImageChange?: (base64: string) => void;
+  identifyEnabled?: boolean;
 }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [matches, setMatches] = useState<PlantIdentification[]>([]);
@@ -26,7 +28,7 @@ const PlantPhotoIdentify = ({
     setError(null);
     setMatches([]);
     setSelected(null);
-    setPreview(URL.createObjectURL(file)); 
+    setPreview(URL.createObjectURL(file));
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -54,10 +56,13 @@ const PlantPhotoIdentify = ({
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx?.drawImage(img, 0, 0, width, height);
-        
+
         // Compress to JPEG with 0.8 quality
         const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
         onImageChange?.(dataUrl);
+
+        // Only run AI identification if the feature is enabled
+        if (!identifyEnabled) return;
 
         canvas.toBlob((blob) => {
           if (!blob) {
@@ -90,8 +95,8 @@ const PlantPhotoIdentify = ({
             const top = validMatches[0];
             setSelected(top.scientificName);
             onIdentified(top);
-            toast.success("Plant identified!", { 
-              description: `Looks like a ${top.commonName ?? top.scientificName}.` 
+            toast.success("Plant identified!", {
+              description: `Looks like a ${top.commonName ?? top.scientificName}.`
             });
           });
         }, "image/jpeg", 0.8);
@@ -112,7 +117,7 @@ const PlantPhotoIdentify = ({
   return (
     <div className="col-span-2 space-y-3">
       <label className="block text-sm font-semibold text-emerald-800">
-        Identify by photo 📸
+        {identifyEnabled ? "Identify by photo 📸" : "Plant photo 📸"}
       </label>
 
       <div className="flex items-start gap-3">
