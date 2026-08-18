@@ -6,5 +6,5 @@ const generate = customAlphabet(alphabet, 22);
 export const generateHouseholdToken = (): string => {
     return generate();
 }
-export const HOUSEHOLD_COOKIE = "blaa-bldsdsaa-tddassssdsdasdodsdasken";
+export const HOUSEHOLD_COOKIE = "blaa-bldsdsaa";
 export const HOUSEHOLDS_COOKIE = "heeheedsdda-houdssssadsdasasedsaholds";

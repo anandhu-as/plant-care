@@ -76,14 +76,18 @@ const PlantPhotoIdentify = ({
               toast.error("Species not found", { description: errMsg });
               return;
             }
-            if (result.matches.length === 0) {
+
+            // Filter out extremely low confidence matches (e.g., non-plants)
+            const validMatches = result.matches.filter(m => m.confidence >= 0.05);
+
+            if (validMatches.length === 0) {
               const errMsg = "No matches found — try a clearer photo of a leaf.";
               setError(errMsg);
               toast.error("Species not found", { description: errMsg });
               return;
             }
-            setMatches(result.matches);
-            const top = result.matches[0];
+            setMatches(validMatches);
+            const top = validMatches[0];
             setSelected(top.scientificName);
             onIdentified(top);
             toast.success("Plant identified!", { 

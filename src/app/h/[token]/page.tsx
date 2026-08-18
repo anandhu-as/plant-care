@@ -3,13 +3,9 @@ import { notFound } from "next/navigation";
 
 import { HOUSEHOLDS_COOKIE } from "@/lib/token";
 import { parseHouseholdList } from "@/lib/household-list";
-import HouseholdHeader from "@/components/household/household-header";
-
-import PlantList from "@/components/plants/plant-list";
-import AddPlantForm from "@/components/plants/add-plant-form";
-import RememberHousehold from "@/components/household/remember-household";
 import { getHouseHoldByToken } from "@/lib/queries/household";
 import { getPlantsForHousehold } from "@/lib/queries/plant";
+import HouseholdClient from "@/components/household/household-client";
 
  const Page = async ({
     params,
@@ -28,21 +24,14 @@ import { getPlantsForHousehold } from "@/lib/queries/plant";
     const origin = `${protocol}://${host}`;
 
     return (
-        <main className="min-h-screen bg-[#f5f1ea] p-5 sm:p-10">
-            <div className="mx-auto max-w-2xl space-y-8">
-                <RememberHousehold token={token} name={household.name} />
-                <HouseholdHeader
-                    name={household.name}
-                    plantCount={plants.length}
-                    token={token}
-                    households={households}
-                    origin={origin}
-                    plantIdEnabled={!!process.env.PLANTNET_API_KEY}
-                />
-
-                <PlantList token={token} plants={plants} />
-            </div>
-        </main>
+        <HouseholdClient
+            household={household}
+            plants={plants}
+            token={token}
+            households={households}
+            origin={origin}
+            plantIdEnabled={!!process.env.PLANTNET_API_KEY}
+        />
     );
 }
 export default Page
