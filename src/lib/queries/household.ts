@@ -5,7 +5,7 @@ import { generateHouseholdToken } from "../token";
 const houseHoldName: string = "Ente veed";
 //pushing the token and HouseHoldName into db 
 export const createHouseHold = async (name: string = houseHoldName) => {
-    //attempt - in each attempt or each iteration a new token is generated
+
     for (let attempt = 0; attempt < 5; attempt++) {
         try {
             const [household] = await db.insert(households)
@@ -28,4 +28,7 @@ export const getHouseHoldByToken = async (token: string) => {
         .where(eq(households.token, token))
         .limit(1);
     return household ?? null
+}
+export const deleteHouseHold = async (token: string) => {
+    await db.delete(households).where(eq(households.token, token))
 }
