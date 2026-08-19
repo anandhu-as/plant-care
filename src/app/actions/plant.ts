@@ -1,11 +1,12 @@
-"use server"
+"use server";
+
 import { getHouseHoldByToken } from "@/lib/queries/household"
 import { addPlant, removePlant } from "@/lib/queries/plant";
 import { logWatering } from "@/lib/queries/watering";
 import { revalidatePath } from "next/cache";
 export const requireHouseHold = async (token: string) => {
     const household = await getHouseHoldByToken(token);
-    if (!household) throw new Error("Household doesn't existss create one first ");
+    if (!household) throw new Error("This household could not be found. Please check your link or create a new one.");
     return household;
 }
 export const addPlantAction = async (token: string, formData: FormData) => {
