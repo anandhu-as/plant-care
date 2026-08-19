@@ -1,7 +1,98 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import type { RememberedHousehold } from "@/lib/household-list";
+import { removeHouseHold } from "@/app/actions/household";
+
+const TrashIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
+
+
+const ConfirmPopup = ({
+  householdName,
+  onConfirm,
+  onCancel,
+  isPending,
+}: {
+  householdName: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  isPending: boolean;
+}) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]"
+      onClick={onCancel}
+    />
+
+    <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl animate-[popIn_200ms_ease-out]">
+      <div className="mb-1 text-center text-2xl">👋</div>
+      <h3 className="text-center text-base font-semibold text-stone-800">
+        Remove household?
+      </h3>
+      <p className="mt-2 text-center text-sm leading-relaxed text-stone-500">
+        <span className="font-medium text-stone-700">{householdName}</span> will
+        be removed from this device. You can always rejoin using the share link.
+      </p>
+      <div className="mt-5 flex gap-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={isPending}
+          className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-600 transition hover:bg-stone-50 cursor-pointer disabled:opacity-40"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={isPending}
+          className="flex-1 rounded-xl bg-amber-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-900 cursor-pointer disabled:opacity-60"
+        >
+          {isPending ? (
+            <span className="inline-flex items-center gap-2">
+              <span className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              Removing…
+            </span>
+          ) : (
+            "Remove"
+          )}
+        </button>
+      </div>
+    </div>
+
+
+    <style>{`
+      @keyframes fadeIn {
+        from { opacity: 0 }
+        to   { opacity: 1 }
+      }
+      @keyframes popIn {
+        from { opacity: 0; transform: scale(0.95) translateY(8px) }
+        to   { opacity: 1; transform: scale(1) translateY(0) }
+      }
+    `}</style>
+  </div>
+);
+
 
 const HouseholdSwitcher = ({
   current,
@@ -11,66 +102,148 @@ const HouseholdSwitcher = ({
   households: RememberedHousehold[];
 }) => {
   const [open, setOpen] = useState(false);
+  const [confirmToken, setConfirmToken] = useState<string | null>(null);
+  const [deletingToken, setDeletingToken] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const others = households.filter((h) => h.token !== current);
   const currentHousehold = households.find((h) => h.token === current);
 
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-full border border-[#4d4438] bg-[#3b3228] px-4 py-2 text-sm font-semibold tracking-wide text-amber-50 transition hover:bg-[#4d4438] cursor-pointer shadow-sm"
-      >
-        Switch
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={`text-stone-400 transition-transform ${open ? "rotate-180" : ""}`}
-        >
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
+  const confirmingHousehold = households.find((h) => h.token === confirmToken);
 
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 sm:left-auto sm:right-0 z-20 mt-2 w-56 max-w-[90vw] rounded-xl border border-stone-200 bg-white p-2 shadow-lg">
-            {others.length > 0 ? (
-              <ul className="space-y-1">
-                {others.map((h) => (
-                  <li key={h.token}>
-                    <Link
-                      href={`/h/${h.token}`}
-                      className="block truncate rounded-lg px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 transition-colors"
-                      onClick={() => setOpen(false)}
+  const requestDelete = useCallback((token: string) => {
+    setConfirmToken(token);
+  }, []);
+
+  const cancelDelete = useCallback(() => {
+    setConfirmToken(null);
+  }, []);
+
+  const executeDelete = useCallback(() => {
+    if (!confirmToken) return;
+    const token = confirmToken;
+    setDeletingToken(token);
+    setConfirmToken(null);
+    startTransition(async () => {
+      await removeHouseHold(token);
+      setOpen(false);
+      setDeletingToken(null);
+      if (token === current) {
+        router.push("/");
+      } else {
+        router.refresh();
+      }
+    });
+  }, [confirmToken, current, router]);
+
+  return (
+    <>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex items-center gap-2 rounded-full border border-[#4d4438] bg-[#3b3228] px-4 py-2 text-sm font-semibold tracking-wide text-amber-50 transition hover:bg-[#4d4438] cursor-pointer shadow-sm"
+        >
+          Switch
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`text-stone-400 transition-transform ${open ? "rotate-180" : ""}`}
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        {open && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+            <div className="absolute left-0 sm:left-auto sm:right-0 z-20 mt-2 w-56 max-w-[90vw] rounded-xl border border-stone-200 bg-white p-2 shadow-lg">
+
+              {currentHousehold && (
+                <>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2 bg-stone-50">
+                    <span className="truncate text-sm font-semibold text-stone-800">
+                      {currentHousehold.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => requestDelete(currentHousehold.token)}
+                      disabled={isPending}
+                      className="ml-2 flex-shrink-0 rounded-md p-1 text-stone-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-40 cursor-pointer"
+                      title="Remove household"
                     >
-                      {h.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="px-3 py-2 text-sm text-stone-400">No other households yet</p>
-            )}
-            <div className="my-1 h-px bg-stone-100" />
-            <Link
-              href="/?new=1"
-              className="block rounded-lg px-3 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-50 transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              + Create another
-            </Link>
-          </div>
-        </>
+                      {deletingToken === currentHousehold.token ? (
+                        <span className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-stone-300 border-t-red-500" />
+                      ) : (
+                        <TrashIcon />
+                      )}
+                    </button>
+                  </div>
+                  <div className="my-1 h-px bg-stone-100" />
+                </>
+              )}
+
+              {/* Other households */}
+              {others.length > 0 ? (
+                <ul className="space-y-1">
+                  {others.map((h) => (
+                    <li key={h.token} className="flex items-center justify-between rounded-lg hover:bg-stone-100 transition-colors">
+                      <Link
+                        href={`/h/${h.token}`}
+                        className="flex-1 truncate px-3 py-2 text-sm font-medium text-stone-700"
+                        onClick={() => setOpen(false)}
+                      >
+                        {h.name}
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => requestDelete(h.token)}
+                        disabled={isPending}
+                        className="mr-1 flex-shrink-0 rounded-md p-1 text-stone-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-40 cursor-pointer"
+                        title="Remove household"
+                      >
+                        {deletingToken === h.token ? (
+                          <span className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-stone-300 border-t-red-500" />
+                        ) : (
+                          <TrashIcon />
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="px-3 py-2 text-sm text-stone-400">No other households yet</p>
+              )}
+              <div className="my-1 h-px bg-stone-100" />
+              <Link
+                href="/?new=1"
+                className="block rounded-lg px-3 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-50 transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                + Create another
+              </Link>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Confirmation popup */}
+      {confirmingHousehold && (
+        <ConfirmPopup
+          householdName={confirmingHousehold.name}
+          onConfirm={executeDelete}
+          onCancel={cancelDelete}
+          isPending={isPending}
+        />
       )}
-    </div>
+    </>
   );
 };
 

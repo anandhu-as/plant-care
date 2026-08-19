@@ -32,3 +32,16 @@ export const createHouseHoldAction = async (formData: FormData) => {
 export const rememberHouseholdAction = async (token: string, name: string) => {
   await rememberHousehold(token, name);
 }
+// Forget household from this device only ,, keeep in db
+export const removeHouseHold = async (token: string) => {
+  const cookieStore = await cookies();
+  const existing = parseHouseholdList(cookieStore.get(HOUSEHOLDS_COOKIE)?.value);
+  const updated = existing.filter((h) => h.token !== token);
+  cookieStore.set(HOUSEHOLDS_COOKIE, JSON.stringify(updated), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 365,
+    path: "/",
+  });
+}
