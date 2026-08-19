@@ -3,11 +3,10 @@ import { db } from "../db";
 import { households } from "../db/schema";
 import { generateHouseholdToken } from "../token";
 const houseHoldName: string = "Ente veed";
-//attempt - in each attempt or each itteration a new token is generated
-let attempt = 0;
 //pushing the token and HouseHoldName into db 
 export const createHouseHold = async (name: string = houseHoldName) => {
-    for (attempt; attempt < 5; attempt++) {
+    //attempt - in each attempt or each iteration a new token is generated
+    for (let attempt = 0; attempt < 5; attempt++) {
         try {
             const [household] = await db.insert(households)
                 .values({ token: generateHouseholdToken(), name })

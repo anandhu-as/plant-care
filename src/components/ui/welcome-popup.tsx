@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 const STORAGE_KEY = "plantparent_welcomed";
 
 export default function WelcomePopup({ householdName }: { householdName: string }) {
-  const [open, setOpen]       = useState(false);
+  const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
@@ -26,7 +26,6 @@ export default function WelcomePopup({ householdName }: { householdName: string 
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
         style={{ backgroundColor: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
@@ -35,7 +34,6 @@ export default function WelcomePopup({ householdName }: { householdName: string 
         role="dialog"
         aria-labelledby="welcome-title"
       >
-        {/* Card — matches the app's light card: bg-[#ebe3d5] */}
         <div
           className="relative w-full max-w-xs rounded-3xl overflow-hidden shadow-xl"
           style={{
@@ -48,7 +46,7 @@ export default function WelcomePopup({ householdName }: { householdName: string 
         >
           <div className="px-5 pt-5 pb-5 flex flex-col gap-4">
 
-            {/* Hero row */}
+
             <div className="flex items-center gap-3">
               <span
                 className="text-3xl select-none"
@@ -72,7 +70,7 @@ export default function WelcomePopup({ householdName }: { householdName: string 
               </div>
             </div>
 
-            {/* Feature chips — matches "0 plants" pill style */}
+
             <div className="flex flex-wrap gap-1.5">
               {[
                 { e: "💧", label: "Track watering" },
@@ -89,7 +87,7 @@ export default function WelcomePopup({ householdName }: { householdName: string 
               ))}
             </div>
 
-            {/* CTA — matches the "Add Plant" button exactly */}
+
             <button
               id="welcome-popup-dismiss"
               onClick={dismiss}
