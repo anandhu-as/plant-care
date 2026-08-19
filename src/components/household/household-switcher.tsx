@@ -24,7 +24,6 @@ const TrashIcon = () => (
   </svg>
 );
 
-
 const ConfirmPopup = ({
   householdName,
   onConfirm,
@@ -37,7 +36,6 @@ const ConfirmPopup = ({
   isPending: boolean;
 }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-
     <div
       className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]"
       onClick={onCancel}
@@ -79,7 +77,6 @@ const ConfirmPopup = ({
       </div>
     </div>
 
-
     <style>{`
       @keyframes fadeIn {
         from { opacity: 0 }
@@ -93,7 +90,6 @@ const ConfirmPopup = ({
   </div>
 );
 
-
 const HouseholdSwitcher = ({
   current,
   households,
@@ -106,8 +102,11 @@ const HouseholdSwitcher = ({
   const [deletingToken, setDeletingToken] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const others = households.filter((h) => h.token !== current);
   const currentHousehold = households.find((h) => h.token === current);
+
+  // Everyone except the currently active household — this is what
+  // gets rendered in the list below, so the current one isn't duplicated.
+  const others = households.filter((h) => h.token !== current);
 
   const confirmingHousehold = households.find((h) => h.token === confirmToken);
 
@@ -165,11 +164,10 @@ const HouseholdSwitcher = ({
           <>
             <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
             <div className="absolute left-0 sm:left-auto sm:right-0 z-20 mt-2 w-56 max-w-[90vw] rounded-xl border border-stone-200 bg-white p-2 shadow-lg">
-
               {currentHousehold && (
                 <>
                   <div className="flex items-center justify-between rounded-lg px-3 py-2 bg-stone-50">
-                    <span className="truncate text-sm font-semibold text-stone-800">
+                    <span className="truncate text-sm font-semibold underline text-stone-800">
                       {currentHousehold.name}
                     </span>
                     <button
@@ -179,29 +177,29 @@ const HouseholdSwitcher = ({
                       className="ml-2 flex-shrink-0 rounded-md p-1 text-stone-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-40 cursor-pointer"
                       title="Remove household"
                     >
-                      {deletingToken === currentHousehold.token ? (
-                        <span className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-stone-300 border-t-red-500" />
-                      ) : (
-                        <TrashIcon />
-                      )}
+                      <TrashIcon />
                     </button>
                   </div>
+
                   <div className="my-1 h-px bg-stone-100" />
                 </>
               )}
 
-              {/* Other households */}
               {others.length > 0 ? (
                 <ul className="space-y-1">
                   {others.map((h) => (
-                    <li key={h.token} className="flex items-center justify-between rounded-lg hover:bg-stone-100 transition-colors">
+                    <li
+                      key={h.token}
+                      className="flex items-center justify-between rounded-lg transition-colors hover:bg-stone-100"
+                    >
                       <Link
                         href={`/h/${h.token}`}
                         className="flex-1 truncate px-3 py-2 text-sm font-medium text-stone-700"
                         onClick={() => setOpen(false)}
                       >
-                        {h.name}
+                        <span className="truncate">{h.name}</span>
                       </Link>
+
                       <button
                         type="button"
                         onClick={() => requestDelete(h.token)}
@@ -219,9 +217,13 @@ const HouseholdSwitcher = ({
                   ))}
                 </ul>
               ) : (
-                <p className="px-3 py-2 text-sm text-stone-400">No other households yet</p>
+                <p className="px-3 py-2 text-sm text-stone-400">
+                  No other households
+                </p>
               )}
+
               <div className="my-1 h-px bg-stone-100" />
+
               <Link
                 href="/?new=1"
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-50 transition-colors"
@@ -234,7 +236,6 @@ const HouseholdSwitcher = ({
         )}
       </div>
 
-      {/* Confirmation popup */}
       {confirmingHousehold && (
         <ConfirmPopup
           householdName={confirmingHousehold.name}
