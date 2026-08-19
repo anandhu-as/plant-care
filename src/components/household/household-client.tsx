@@ -6,6 +6,7 @@ import PlantList from "@/components/plants/plant-list";
 import type { RememberedHousehold } from "@/lib/household-list";
 import type { Plant } from "@/lib/db/schema";
 import RememberHousehold from "@/components/household/remember-household";
+import WelcomePopup from "@/components/ui/welcome-popup";
 
 type PlantWithLastWatered = Plant & { lastWateredAt: Date | null };
 
@@ -65,6 +66,7 @@ export default function HouseholdClient({
 
   return (
     <main className={`min-h-screen transition-colors duration-500 ${zenMode ? "bg-[#24211e]" : "bg-[#f5f1ea]"} p-5 sm:p-10`}>
+      <WelcomePopup householdName={household.name} />
       <div className="mx-auto max-w-2xl space-y-8">
         <RememberHousehold token={token} name={household.name} />
         <HouseholdHeader
