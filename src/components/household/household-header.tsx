@@ -1,7 +1,10 @@
+"use client";
+
 import HouseholdSwitcher from "@/components/household/household-switcher";
 import ShareLink from "@/components/household/share-link";
 import AddPlantForm from "@/components/plants/add-plant-form";
 import type { RememberedHousehold } from "@/lib/household-list";
+import { useUiStore } from "@/store/ui-store";
 
 const HouseholdHeader = ({
   name,
@@ -10,8 +13,6 @@ const HouseholdHeader = ({
   households,
   origin,
   plantIdEnabled,
-  zenMode,
-  toggleZenMode,
 }: {
   name: string;
   plantCount: number;
@@ -19,9 +20,9 @@ const HouseholdHeader = ({
   households: RememberedHousehold[];
   origin: string;
   plantIdEnabled: boolean;
-  zenMode: boolean;
-  toggleZenMode: () => void;
 }) => {
+  const { zenMode, toggleZenMode } = useUiStore();
+
   return (
     <div className="flex flex-col gap-6 mb-8">
       <header className={`flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-6 rounded-3xl shadow-sm transition-colors duration-500 ${zenMode ? "bg-[#2e2924]" : "bg-[#ebe3d5]"}`}>
@@ -43,7 +44,6 @@ const HouseholdHeader = ({
           </a>
           <AddPlantForm token={token} plantIdEnabled={plantIdEnabled} />
 
-          {/* Zen Mode Toggle */}
           <button
             type="button"
             onClick={toggleZenMode}
@@ -52,12 +52,10 @@ const HouseholdHeader = ({
             aria-label="Toggle dark mode"
           >
             {zenMode ? (
-              // Sun icon for light mode
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
               </svg>
             ) : (
-              // Moon icon for dark mode
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
               </svg>

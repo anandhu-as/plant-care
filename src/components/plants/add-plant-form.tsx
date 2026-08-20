@@ -1,19 +1,17 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { addPlantAction } from "@/app/actions/plant";
 import PlantPhotoIdentify from "@/components/plants/plant-photo-identify";
 import { PlantIdentification } from "@/app/actions/identify-plant";
 import { toast } from "sonner";
+import { useAddPlantStore } from "@/store/add-plant-store";
 
 const inputClass =
   "rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-700/40";
 
 const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled: boolean }) => {
-  const [name, setName] = useState("");
-  const [species, setSpecies] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-
-  const [isSuccess, setIsSuccess] = useState(false);
+  const { isOpen, isSuccess, name, species, imageUrl, open, close, reset, setName, setSpecies, setImageUrl, setIsSuccess } =
+    useAddPlantStore();
   const [isPending, startTransition] = useTransition();
 
   const handleIdentified = (match: PlantIdentification) => {
@@ -21,10 +19,6 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
     if (!name.trim() && match.commonName) {
       setName(match.commonName);
     }
-  };
-
-  const handleImageChange = (base64: string) => {
-    setImageUrl(base64);
   };
 
   const submitAction = async (formData: FormData) => {
@@ -39,26 +33,10 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
     });
   };
 
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleAddAnother = () => {
-    setName("");
-    setSpecies("");
-    setImageUrl("");
-    setIsSuccess(false);
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-    setTimeout(() => {
-      handleAddAnother();
-    }, 300);
-  };
-
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={open}
         className="flex items-center justify-center h-10 px-3 sm:px-4 rounded-full bg-[#469b61] text-white font-medium transition hover:bg-[#3d8654] shadow-sm hover:shadow cursor-pointer gap-2"
         aria-label="Add Plant"
       >
@@ -76,7 +54,7 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={closeModal}
+              onClick={close}
               className="absolute top-4 right-4 h-8 w-8 flex items-center justify-center rounded-full bg-stone-200/50 text-stone-600 hover:bg-stone-300/50 hover:text-stone-900 transition"
               aria-label="Close modal"
             >
@@ -103,13 +81,13 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
                 <p className="text-stone-700 mb-8 text-center text-lg">Your plant has been successfully added to the household.</p>
                 <div className="flex gap-4">
                   <button
-                    onClick={handleAddAnother}
+                    onClick={reset}
                     className="rounded-xl bg-[#469b61] px-5 py-2.5 font-semibold text-white transition hover:bg-[#3d8654] shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer"
                   >
                     <span>🌱</span> Add another
                   </button>
                   <button
-                    onClick={closeModal}
+                    onClick={close}
                     className="rounded-xl bg-stone-200 px-5 py-2.5 font-semibold text-stone-700 transition hover:bg-stone-300 flex items-center cursor-pointer"
                   >
                     Close
@@ -121,7 +99,7 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
                 <div className="col-span-2 mb-2 p-4 bg-white rounded-xl border border-emerald-100 shadow-sm">
                   <PlantPhotoIdentify
                     onIdentified={handleIdentified}
-                    onImageChange={handleImageChange}
+                    onImageChange={setImageUrl}
                     identifyEnabled={plantIdEnabled}
                   />
                 </div>
@@ -163,19 +141,8 @@ const AddPlantForm = ({ token, plantIdEnabled }: { token: string; plantIdEnabled
                       fill="none"
                       viewBox="0 0 24 24"
                     >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                   )}
                   {!isPending && <span>🌿</span>}
