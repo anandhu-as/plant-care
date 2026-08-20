@@ -103,9 +103,6 @@ const HouseholdSwitcher = ({
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const currentHousehold = households.find((h) => h.token === current);
-  const others = households.filter((h) => h.token !== current);
-  const confirmingHousehold = households.find((h) => h.token === confirmToken);
 
   const executeDelete = useCallback(() => {
     if (!confirmToken) return;
