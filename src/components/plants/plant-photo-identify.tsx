@@ -2,9 +2,9 @@
 "use client";
 
 import { identifyPlantAction, PlantIdentification } from "@/app/actions/identify-plant";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { toast } from "sonner";
-
+import { usePlantPhotoStore } from "@/store/plant-photo-store";
 
 const PlantPhotoIdentify = ({
   onIdentified,
@@ -15,19 +15,15 @@ const PlantPhotoIdentify = ({
   onImageChange?: (base64: string) => void;
   identifyEnabled?: boolean;
 }) => {
-  const [preview, setPreview] = useState<string | null>(null);
-  const [matches, setMatches] = useState<PlantIdentification[]>([]);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { preview, matches, selected, error, setPreview, setMatches, setSelected, setError, reset } =
+    usePlantPhotoStore();
   const [isPending, startTransition] = useTransition();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setError(null);
-    setMatches([]);
-    setSelected(null);
+    reset();
     setPreview(URL.createObjectURL(file));
 
     const reader = new FileReader();
@@ -57,11 +53,9 @@ const PlantPhotoIdentify = ({
         const ctx = canvas.getContext("2d");
         ctx?.drawImage(img, 0, 0, width, height);
 
-        // Compress to JPEG with 0.8 quality
         const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
         onImageChange?.(dataUrl);
 
-        // Only run AI identification if the feature is enabled
         if (!identifyEnabled) return;
 
         canvas.toBlob((blob) => {
@@ -82,8 +76,7 @@ const PlantPhotoIdentify = ({
               return;
             }
 
-            // Filter out extremely low confidence matches (e.g., non-plants)
-            const validMatches = result.matches.filter(m => m.confidence >= 0.05);
+            const validMatches = result.matches.filter((m) => m.confidence >= 0.05);
 
             if (validMatches.length === 0) {
               const errMsg = "No matches found — try a clearer photo of a leaf.";
@@ -91,12 +84,13 @@ const PlantPhotoIdentify = ({
               toast.error("Species not found", { description: errMsg });
               return;
             }
+
             setMatches(validMatches);
             const top = validMatches[0];
             setSelected(top.scientificName);
             onIdentified(top);
             toast.success("Plant identified!", {
-              description: `Looks like a ${top.commonName ?? top.scientificName}.`
+              description: `Looks like a ${top.commonName ?? top.scientificName}.`,
             });
           });
         }, "image/jpeg", 0.8);
@@ -109,8 +103,8 @@ const PlantPhotoIdentify = ({
   const pickMatch = (m: PlantIdentification) => {
     setSelected(m.scientificName);
     onIdentified(m);
-    toast.success("Match updated", { 
-      description: `Selected ${m.commonName ?? m.scientificName}.` 
+    toast.success("Match updated", {
+      description: `Selected ${m.commonName ?? m.scientificName}.`,
     });
   };
 
@@ -122,7 +116,6 @@ const PlantPhotoIdentify = ({
 
       <div className="flex items-start gap-3">
         {preview && (
-         
           <img
             src={preview}
             alt="Uploaded plant"
@@ -140,25 +133,9 @@ const PlantPhotoIdentify = ({
 
       {isPending && (
         <div className="flex items-center gap-2 text-sm font-medium text-emerald-600">
-          <svg
-            className="animate-spin h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
+          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           Identifying... 🌿
         </div>
@@ -183,19 +160,12 @@ const PlantPhotoIdentify = ({
                   }`}
                 >
                   {m.imageUrl ? (
-
-                    <img
-                      src={m.imageUrl}
-                      alt=""
-                      className="h-6 w-6 rounded-full object-cover shadow-sm"
-                    />
+                    <img src={m.imageUrl} alt="" className="h-6 w-6 rounded-full object-cover shadow-sm" />
                   ) : (
                     <span className="text-base">🌿</span>
                   )}
                   {m.commonName ?? m.scientificName}{" "}
-                  <span className="text-stone-400 font-normal">
-                    ({Math.round(m.confidence * 100)}%)
-                  </span>
+                  <span className="text-stone-400 font-normal">({Math.round(m.confidence * 100)}%)</span>
                 </button>
               </li>
             ))}
