@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useState, useTransition, useCallback } from "react";
+import { useTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { RememberedHousehold } from "@/lib/household-list";
 import { removeHouseHold } from "@/app/actions/household";
+import { useHouseholdSwitcherStore } from "@/store/household-switcher-store";
 
 const TrashIcon = () => (
   <svg
@@ -97,50 +98,36 @@ const HouseholdSwitcher = ({
   current: string;
   households: RememberedHousehold[];
 }) => {
-  const [open, setOpen] = useState(false);
-  const [confirmToken, setConfirmToken] = useState<string | null>(null);
-  const [deletingToken, setDeletingToken] = useState<string | null>(null);
+  const { open, confirmToken, deletingToken, toggleOpen, setOpen, requestDelete, cancelDelete, startDeleting, finishDeleting } =
+    useHouseholdSwitcherStore();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
   const currentHousehold = households.find((h) => h.token === current);
-
-  // Everyone except the currently active household — this is what
-  // gets rendered in the list below, so the current one isn't duplicated.
   const others = households.filter((h) => h.token !== current);
-
   const confirmingHousehold = households.find((h) => h.token === confirmToken);
-
-  const requestDelete = useCallback((token: string) => {
-    setConfirmToken(token);
-  }, []);
-
-  const cancelDelete = useCallback(() => {
-    setConfirmToken(null);
-  }, []);
 
   const executeDelete = useCallback(() => {
     if (!confirmToken) return;
     const token = confirmToken;
-    setDeletingToken(token);
-    setConfirmToken(null);
+    startDeleting(token);
     startTransition(async () => {
       await removeHouseHold(token);
-      setOpen(false);
-      setDeletingToken(null);
+      finishDeleting();
       if (token === current) {
         router.push("/");
       } else {
         router.refresh();
       }
     });
-  }, [confirmToken, current, router]);
+  }, [confirmToken, current, router, startDeleting, finishDeleting]);
 
   return (
     <>
       <div className="relative">
         <button
           type="button"
-          onClick={() => setOpen((o) => !o)}
+          onClick={toggleOpen}
           className="flex items-center gap-2 rounded-full border border-[#4d4438] bg-[#3b3228] px-4 py-2 text-sm font-semibold tracking-wide text-amber-50 transition hover:bg-[#4d4438] cursor-pointer shadow-sm"
         >
           Switch

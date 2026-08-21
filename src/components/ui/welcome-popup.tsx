@@ -1,28 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useUiStore } from "@/store/ui-store";
 
 const STORAGE_KEY = "plantparent_welcomed";
 
 export default function WelcomePopup({ householdName }: { householdName: string }) {
-  const [open, setOpen] = useState(false);
-  const [closing, setClosing] = useState(false);
+  const { welcomeOpen, welcomeClosing, openWelcome, dismissWelcome } = useUiStore();
 
   useEffect(() => {
     const seen = localStorage.getItem(STORAGE_KEY);
-    if (!seen) setOpen(true);
-  }, []);
+    if (!seen) openWelcome();
+  }, [openWelcome]);
 
   const dismiss = () => {
-    setClosing(true);
+    dismissWelcome();
     setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, "true");
-      setOpen(false);
-      setClosing(false);
     }, 250);
   };
 
-  if (!open) return null;
+  if (!welcomeOpen) return null;
 
   return (
     <>
@@ -38,14 +36,13 @@ export default function WelcomePopup({ householdName }: { householdName: string 
           className="relative w-full max-w-xs rounded-3xl overflow-hidden shadow-xl"
           style={{
             background: "#ebe3d5",
-            animation: closing
+            animation: welcomeClosing
               ? "wDown 0.25s ease forwards"
               : "wUp 0.4s cubic-bezier(0.34,1.4,0.64,1) both",
           }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="px-5 pt-5 pb-5 flex flex-col gap-4">
-
 
             <div className="flex items-center gap-3">
               <span
@@ -70,7 +67,6 @@ export default function WelcomePopup({ householdName }: { householdName: string 
               </div>
             </div>
 
-
             <div className="flex flex-wrap gap-1.5">
               {[
                 { e: "💧", label: "Track watering" },
@@ -86,7 +82,6 @@ export default function WelcomePopup({ householdName }: { householdName: string 
                 </span>
               ))}
             </div>
-
 
             <button
               id="welcome-popup-dismiss"
