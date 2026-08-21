@@ -20,11 +20,10 @@ const PlantCard = ({ token, plant, index = 0 }: { token: string; plant: PlantWit
 
   return (
     <li
-      className={`relative py-6 px-4 -mx-4 group border-b last:border-0 rounded-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-sm animate-pop-in opacity-0 ${
-        zenMode
+      className={`relative py-6 px-4 -mx-4 group border-b last:border-0 rounded-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-sm animate-pop-in opacity-0 ${zenMode
           ? "border-stone-700/50 hover:bg-stone-800/50"
           : "border-stone-200 hover:bg-stone-50"
-      }`}
+        }`}
       style={{ animationDelay: `${index * 75}ms` }}
     >
 
@@ -74,11 +73,11 @@ const PlantCard = ({ token, plant, index = 0 }: { token: string; plant: PlantWit
               Mark watered 💧
             </SubmitButton>
           </form>
-          {/* Edit button */}
+
           <button
             type="button"
             onClick={() => openEdit(plant)}
-            className={`p-2 rounded-full transition cursor-pointer opacity-0 group-hover:opacity-100 ${zenMode ? "text-stone-400 hover:bg-stone-700 hover:text-amber-200" : "text-stone-400 hover:bg-amber-100 hover:text-amber-600"}`}
+            className={`p-2 rounded-full transition cursor-pointer ${zenMode ? "text-stone-500 hover:bg-stone-700 hover:text-amber-200" : "text-stone-400 hover:bg-amber-100 hover:text-amber-600"}`}
             aria-label={`Edit ${plant.name}`}
             title="Edit plant"
           >
@@ -86,7 +85,7 @@ const PlantCard = ({ token, plant, index = 0 }: { token: string; plant: PlantWit
           </button>
           <form action={removePlantAction.bind(null, token, plant.id)}>
             <SubmitButton
-              className={`p-2 rounded-full transition cursor-pointer opacity-0 group-hover:opacity-100 ${zenMode ? "text-stone-600 hover:bg-stone-700 hover:text-stone-400" : "text-stone-300 hover:bg-stone-100 hover:text-stone-500"}`}
+              className={`p-2 rounded-full transition cursor-pointer ${zenMode ? "text-stone-600 hover:bg-stone-700 hover:text-stone-400" : "text-stone-400 hover:bg-stone-100 hover:text-stone-500"}`}
               aria-label={`Remove ${plant.name}`}
             >
               ❌
