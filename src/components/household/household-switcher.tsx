@@ -38,25 +38,32 @@ const ConfirmPopup = ({
 }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div
-      className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm add-plant-overlay"
       onClick={onCancel}
     />
 
-    <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl animate-[popIn_200ms_ease-out]">
-      <div className="mb-1 text-center text-2xl">👋</div>
-      <h3 className="text-center text-base font-semibold text-stone-800">
-        Remove household?
-      </h3>
-      <p className="mt-2 text-center text-sm leading-relaxed text-stone-500">
-        <span className="font-medium text-stone-700">{householdName}</span> will
-        be removed from this device. You can always rejoin using the share link.
-      </p>
-      <div className="mt-5 flex gap-3">
+    <div className="relative z-10 w-full max-w-sm rounded-3xl bg-[#faf8f5] p-6 shadow-2xl add-plant-modal-desktop overflow-hidden">
+      {/* Decorative top strip */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-red-400 to-amber-400 rounded-t-3xl" />
+
+      <div className="flex flex-col items-center text-center">
+        <div className="h-12 w-12 rounded-2xl bg-amber-100 flex items-center justify-center text-2xl mb-3">
+          👋
+        </div>
+        <h3 className="text-lg font-semibold text-stone-800">
+          Remove household?
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-stone-500 max-w-[260px]">
+          <span className="font-medium text-stone-700">{householdName}</span> will
+          be removed from this device. You can always rejoin using the share link.
+        </p>
+      </div>
+      <div className="mt-6 flex gap-3">
         <button
           type="button"
           onClick={onCancel}
           disabled={isPending}
-          className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-600 transition hover:bg-stone-50 cursor-pointer disabled:opacity-40"
+          className="flex-1 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-stone-600 transition-all duration-200 hover:bg-stone-50 cursor-pointer disabled:opacity-40 active:scale-[0.98]"
         >
           Cancel
         </button>
@@ -64,10 +71,10 @@ const ConfirmPopup = ({
           type="button"
           onClick={onConfirm}
           disabled={isPending}
-          className="flex-1 rounded-xl bg-amber-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-900 cursor-pointer disabled:opacity-60"
+          className="flex-1 rounded-2xl bg-gradient-to-r from-amber-700 to-amber-800 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:from-amber-800 hover:to-amber-900 cursor-pointer disabled:opacity-60 active:scale-[0.98] shadow-md hover:shadow-lg"
         >
           {isPending ? (
-            <span className="inline-flex items-center gap-2">
+            <span className="inline-flex items-center gap-2 justify-center">
               <span className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
               Removing…
             </span>
@@ -77,17 +84,6 @@ const ConfirmPopup = ({
         </button>
       </div>
     </div>
-
-    <style>{`
-      @keyframes fadeIn {
-        from { opacity: 0 }
-        to   { opacity: 1 }
-      }
-      @keyframes popIn {
-        from { opacity: 0; transform: scale(0.95) translateY(8px) }
-        to   { opacity: 1; transform: scale(1) translateY(0) }
-      }
-    `}</style>
   </div>
 );
 

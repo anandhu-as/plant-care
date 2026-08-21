@@ -42,3 +42,67 @@ body {
 .animate-pop-in {
   animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Add Plant Modal Animations */
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(100%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes confettiBurst {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.add-plant-overlay {
+  animation: overlayIn 0.25s ease-out forwards;
+}
+
+.add-plant-modal-mobile {
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.add-plant-modal-desktop {
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.add-plant-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.06) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.add-plant-success {
+  animation: confettiBurst 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom scrollbar for the modal */
+.add-plant-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.add-plant-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.add-plant-scroll::-webkit-scrollbar-thumb {
+  background: rgba(120, 113, 108, 0.25);
+  border-radius: 3px;
+}
+.add-plant-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 113, 108, 0.4);
+}

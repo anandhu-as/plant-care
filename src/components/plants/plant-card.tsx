@@ -21,8 +21,8 @@ const PlantCard = ({ token, plant, index = 0 }: { token: string; plant: PlantWit
   return (
     <li
       className={`relative py-6 px-4 -mx-4 group border-b last:border-0 rounded-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-sm animate-pop-in opacity-0 ${zenMode
-          ? "border-stone-700/50 hover:bg-stone-800/50"
-          : "border-stone-200 hover:bg-stone-50"
+        ? "border-stone-700/50 hover:bg-stone-800/50"
+        : "border-stone-200 hover:bg-stone-50"
         }`}
       style={{ animationDelay: `${index * 75}ms` }}
     >
@@ -94,7 +94,7 @@ const PlantCard = ({ token, plant, index = 0 }: { token: string; plant: PlantWit
         </div>
       </div>
 
-      {/* Care Guide section */}
+
       {plant.careGuide && (
         <div className="mt-4">
           <button
