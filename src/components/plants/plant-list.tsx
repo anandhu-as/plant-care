@@ -1,13 +1,16 @@
 "use client";
 
 import PlantCard from "@/components/plants/plant-card";
+import EditPlantForm from "@/components/plants/edit-plant-form";
 import type { Plant } from "@/lib/db/schema";
 import { useUiStore } from "@/store/ui-store";
+import { useEditPlantStore } from "@/store/edit-plant-store";
 
 type PlantWithLastWatered = Plant & { lastWateredAt: Date | null };
 
-const PlantList = ({ token, plants }: { token: string; plants: PlantWithLastWatered[] }) => {
+const PlantList = ({ token, plants, plantIdEnabled }: { token: string; plants: PlantWithLastWatered[]; plantIdEnabled?: boolean }) => {
   const zenMode = useUiStore((s) => s.zenMode);
+  const { editingPlant } = useEditPlantStore();
 
   if (plants.length === 0) {
     return (
@@ -20,12 +23,18 @@ const PlantList = ({ token, plants }: { token: string; plants: PlantWithLastWate
       </div>
     );
   }
+
   return (
-    <ul className="space-y-4">
-      {plants.map((plant, index) => (
-        <PlantCard key={plant.id} token={token} plant={plant} index={index} />
-      ))}
-    </ul>
+    <>
+      <ul className="space-y-4">
+        {plants.map((plant, index) => (
+          <PlantCard key={plant.id} token={token} plant={plant} index={index} />
+        ))}
+      </ul>
+      {editingPlant && (
+        <EditPlantForm token={token} plantIdEnabled={plantIdEnabled ?? false} />
+      )}
+    </>
   );
 };
 

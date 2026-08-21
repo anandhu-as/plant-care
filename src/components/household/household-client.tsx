@@ -45,7 +45,7 @@ export default function HouseholdClient({
             origin={origin}
             plantIdEnabled={plantIdEnabled}
           />
-          <PlantList token={token} plants={plants} />
+          <PlantList token={token} plants={plants} plantIdEnabled={plantIdEnabled} />
         </div>
       </main>
     );
@@ -64,7 +64,7 @@ export default function HouseholdClient({
           origin={origin}
           plantIdEnabled={plantIdEnabled}
         />
-        <PlantList token={token} plants={plants} />
+        <PlantList token={token} plants={plants} plantIdEnabled={plantIdEnabled} />
       </div>
     </main>
   );

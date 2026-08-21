@@ -1,18 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import { statusStyles } from "@/lib/watering-status-styles";
 import type { Plant } from "@/lib/db/schema";
 import { getWateringStatus } from "@/lib/freshness";
 import { markWateredAction, removePlantAction } from "@/app/actions/plant";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { useUiStore } from "@/store/ui-store";
+import { useEditPlantStore } from "@/store/edit-plant-store";
 
 type PlantWithLastWatered = Plant & { lastWateredAt: Date | null };
 
 const PlantCard = ({ token, plant, index = 0 }: { token: string; plant: PlantWithLastWatered; index?: number }) => {
   const zenMode = useUiStore((s) => s.zenMode);
+  const { openEdit } = useEditPlantStore();
   const info = getWateringStatus(plant.lastWateredAt, plant.wateringIntervalDays);
   const style = statusStyles[info.status];
+  const [careOpen, setCareOpen] = useState(false);
 
   return (
     <li
@@ -70,6 +74,16 @@ const PlantCard = ({ token, plant, index = 0 }: { token: string; plant: PlantWit
               Mark watered 💧
             </SubmitButton>
           </form>
+          {/* Edit button */}
+          <button
+            type="button"
+            onClick={() => openEdit(plant)}
+            className={`p-2 rounded-full transition cursor-pointer opacity-0 group-hover:opacity-100 ${zenMode ? "text-stone-400 hover:bg-stone-700 hover:text-amber-200" : "text-stone-400 hover:bg-amber-100 hover:text-amber-600"}`}
+            aria-label={`Edit ${plant.name}`}
+            title="Edit plant"
+          >
+            ✏️
+          </button>
           <form action={removePlantAction.bind(null, token, plant.id)}>
             <SubmitButton
               className={`p-2 rounded-full transition cursor-pointer opacity-0 group-hover:opacity-100 ${zenMode ? "text-stone-600 hover:bg-stone-700 hover:text-stone-400" : "text-stone-300 hover:bg-stone-100 hover:text-stone-500"}`}
@@ -80,6 +94,32 @@ const PlantCard = ({ token, plant, index = 0 }: { token: string; plant: PlantWit
           </form>
         </div>
       </div>
+
+      {/* Care Guide section */}
+      {plant.careGuide && (
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setCareOpen((o) => !o)}
+            className={`flex items-center gap-1.5 text-xs font-semibold transition ${zenMode ? "text-emerald-400 hover:text-emerald-300" : "text-emerald-700 hover:text-emerald-800"}`}
+          >
+            <span>📋</span>
+            Care Guide
+            <svg
+              className={`h-3 w-3 transition-transform duration-200 ${careOpen ? "rotate-180" : ""}`}
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          {careOpen && (
+            <div className={`mt-2 p-3 rounded-xl text-xs leading-relaxed whitespace-pre-wrap font-mono animate-in fade-in slide-in-from-top-1 duration-150 ${zenMode ? "bg-stone-800/60 text-stone-300 border border-stone-700" : "bg-emerald-50/60 text-stone-700 border border-emerald-100"}`}>
+              {plant.careGuide}
+            </div>
+          )}
+        </div>
+      )}
     </li>
   );
 };
