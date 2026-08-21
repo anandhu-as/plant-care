@@ -1,7 +1,9 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { households } from "../db/schema";
-import { generateHouseholdToken } from "../token";
+import { generateHouseholdToken, HOUSEHOLDS_COOKIE } from "../token";
+import { parseHouseholdList } from "../household-list";
+import { cookies } from "next/headers";
 const houseHoldName: string = "Ente veed";
 //pushing the token and HouseHoldName into db 
 export const createHouseHold = async (name: string = houseHoldName) => {
@@ -29,6 +31,7 @@ export const getHouseHoldByToken = async (token: string) => {
         .limit(1);
     return household ?? null
 }
-export const deleteHouseHold = async (token: string) => {
-    await db.delete(households).where(eq(households.token, token))
-}
+//export const deleteHouseHold = async (token: string) => {
+//deleting from db
+//await db.delete(households).where(eq(households.token, token))
+//}

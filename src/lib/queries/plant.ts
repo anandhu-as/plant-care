@@ -8,7 +8,18 @@ type AddPlantInput = {
     emoji?: string;
     imageUrl?: string;
     wateringIntervalDays?: number;
+    careGuide?: string;
 }
+
+type UpdatePlantInput = {
+    name?: string;
+    species?: string;
+    emoji?: string;
+    imageUrl?: string;
+    wateringIntervalDays?: number;
+    careGuide?: string;
+}
+
 //creating plant in household
 export const addPlant = async (householdId: string, input: AddPlantInput) => {
     const [plant] = await db.insert(plants).values({
@@ -18,9 +29,28 @@ export const addPlant = async (householdId: string, input: AddPlantInput) => {
         emoji: input.emoji || "🪴",
         imageUrl: input.imageUrl || null,
         wateringIntervalDays: input.wateringIntervalDays ?? 7,
+        careGuide: input.careGuide || null,
     }).returning();
     return plant;
 }
+
+//updating an existing plant
+export const updatePlant = async (plantId: string, input: UpdatePlantInput) => {
+    const [plant] = await db
+        .update(plants)
+        .set({
+            ...(input.name !== undefined && { name: input.name }),
+            ...(input.species !== undefined && { species: input.species || null }),
+            ...(input.emoji !== undefined && { emoji: input.emoji || "🪴" }),
+            ...(input.imageUrl !== undefined && { imageUrl: input.imageUrl || null }),
+            ...(input.wateringIntervalDays !== undefined && { wateringIntervalDays: input.wateringIntervalDays }),
+            ...(input.careGuide !== undefined && { careGuide: input.careGuide || null }),
+        })
+        .where(eq(plants.id, plantId))
+        .returning();
+    return plant;
+}
+
 //removing plant from db
 export const removePlant = async (plantId: string) => {
     await db

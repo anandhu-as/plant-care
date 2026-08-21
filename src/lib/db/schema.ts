@@ -36,6 +36,7 @@ export const plants = pgTable("plants", {
   wateringIntervalDays: integer("watering_interval_days")
     .notNull()
     .default(7),
+  careGuide: text("care_guide"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
